@@ -41,12 +41,10 @@ public class App {
 
                 //run requestHandler
                 Response response = new Response().setHttpStatusCode(HttpStatusCode.NOT_FOUND);
-                System.out.println(request.getMethod().toString() + request.getPath());
-                if (routes.containsKey(request.getMethod().toString() + request.getPath())) {
+                if (request.getMethod() != null && routes.containsKey(request.getMethod().toString() + request.getPath())) {
                     RequestHandler requestHandler = routes.get(request.getMethod().toString() + request.getPath());
                     response = requestHandler.run(request);
                 }
-                System.out.println(response);
                 //send answer
                 out.print(response);
                 out.flush();

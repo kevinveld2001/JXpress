@@ -17,8 +17,6 @@ public class Request {
             return; //return if no request is found
         }
         String[] splitRequests = rawRequest.split("\n");
-        System.out.println(Arrays.toString(splitRequests));
-
         String[] firstLine = splitRequests[0].split(" ");
 
         method = Method.fromString(firstLine[0]);
