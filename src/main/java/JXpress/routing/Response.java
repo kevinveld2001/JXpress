@@ -43,6 +43,11 @@ public class Response {
         return this;
     }
 
+    public Response addHeader(String key, String value) {
+        headers.put(key, value);
+        return this;
+    }
+
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
