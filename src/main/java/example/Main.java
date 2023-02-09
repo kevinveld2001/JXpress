@@ -24,6 +24,8 @@ public class Main {
                 )
         );
 
+        app.addRoute(Method.POST, "/", req -> new Response().setHTML(req.getBody()));
+
         app.addRoute(Method.GET, "/count", req -> {
             try {
                 int num = Integer.parseInt(req.getParams("num"));
@@ -48,7 +50,7 @@ public class Main {
                 return new Response()
                         .setBody(Integer.toString(out));
 
-            } catch (NumberFormatException ignored) {}
+            } catch (NumberFormatException|NullPointerException ignored) {}
 
             return new Response()
                     .setHttpStatusCode(HttpStatusCode.BAD_REQUEST)

@@ -37,7 +37,7 @@ public class App {
                     rawRequestBuilder.append(line).append("\n");
                 }
                 String rawRequest = rawRequestBuilder.toString();
-                Request request = new Request(rawRequest);
+                Request request = new Request(rawRequest, in);
 
                 //run requestHandler
                 Response response = new Response().setHttpStatusCode(HttpStatusCode.NOT_FOUND);

@@ -2,6 +2,8 @@ package JXpress.routing;
 
 import JXpress.enums.Method;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +19,7 @@ public class Request {
     private final Map<String, List<String>> paramlists = new HashMap<String, List<String>>();
 
 
-    public Request(String rawRequest) {
+    public Request(String rawRequest, BufferedReader in) {
         if (rawRequest.length() == 0) {
             return; //return if no request is found
         }
@@ -36,18 +38,21 @@ public class Request {
             return; // return if request has no headers and body
         }
 
-        boolean isHeader = true;
         for (int i = 1; i < splitRequests.length; i++) {
-            if (splitRequests[i].equals("")) {
-                isHeader = false;
-                continue;
-            }
-            if (isHeader) {
                 String[] header = splitRequests[i].split(": ");
                 headers.put(header[0], header[1]);
-            } else {
-                body += splitRequests[i] + "\n";
-            }
+        }
+        if (headers.containsKey("Content-Length")) {
+            try {
+                int contentLength = Integer.parseInt(headers.get("Content-Length"));
+
+                StringBuilder bodyBuilder = new StringBuilder();
+                while (contentLength != 0) {
+                    bodyBuilder.append((char)in.read());
+                    contentLength--;
+                }
+                this.body = bodyBuilder.toString();
+            } catch (NullPointerException|NumberFormatException|IOException ignored) {}
         }
     }
 
