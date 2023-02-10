@@ -16,11 +16,11 @@ import java.util.Map;
 
 public class App {
 
-    private final Map<String, RequestHandler> routes = new HashMap<>();
+    private final Map<String, RequestHandler[]> routes = new HashMap<>();
     private final MiddlewareHandler middlewareHandler = new MiddlewareHandler();
 
 
-    public void addRoute(Method method, String path, RequestHandler requestHandler) {
+    public void addRoute(Method method, String path, RequestHandler... requestHandler) {
         routes.put(method.toString() + path, requestHandler);
     }
 
@@ -45,7 +45,7 @@ public class App {
                 //run requestHandler
                 Response response = new Response().setHttpStatusCode(HttpStatusCode.NOT_FOUND);
                 if (request.getMethod() != null && routes.containsKey(request.getMethod().toString() + request.getPath())) {
-                    RequestHandler requestHandler = routes.get(request.getMethod().toString() + request.getPath());
+                    RequestHandler[] requestHandler = routes.get(request.getMethod().toString() + request.getPath());
                     response = middlewareHandler.run(requestHandler, request);
                 }
                 //send answer

@@ -1,6 +1,7 @@
 package example;
 
 import JXpress.App;
+import JXpress.callback.RequestHandler;
 import JXpress.enums.HttpStatusCode;
 import JXpress.enums.Method;
 import JXpress.routing.Response;
@@ -21,7 +22,15 @@ public class Main {
             return null;
         });
 
-        app.addRoute(Method.GET, "/", req ->
+
+        RequestHandler localMiddleware = req -> {
+            if (req.getParams().containsKey("local")) {
+                return new Response().setBody(req.getParams("local"));
+            }
+            return null;
+        };
+
+        app.addRoute(Method.GET, "/", localMiddleware, req ->
                 new Response().setHTML(
                         "<p>Counter: " + counter.getCounter() + "</p>" +
                         "<form action='/count' method='get'>" +
