@@ -73,6 +73,13 @@ public class Main {
                     .setHTML("Add `?num[]={your num here}&num[]={your num here}` in the url. End make sure the `num`'s are numbers.");
         });
 
+
+        app.addRoute(Method.GET, "/error", req -> {
+            String[] array = new String[2];
+            //Index 5 is not in the array and sould get a 500 internal server error.
+            return new Response().setBody(array[5]);
+        });
+
         app.listen(80);
     }
 }

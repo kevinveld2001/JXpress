@@ -33,24 +33,7 @@ public class App {
                 PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
                 BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
-                //get request
-                StringBuilder rawRequestBuilder = new StringBuilder();
-                String line;
-                while ((line = in.readLine()) != null && !line.equals("")) {
-                    rawRequestBuilder.append(line).append("\n");
-                }
-                String rawRequest = rawRequestBuilder.toString();
-                Request request = new Request(rawRequest, in);
-
-                //run requestHandler
-                Response response = new Response().setHttpStatusCode(HttpStatusCode.NOT_FOUND);
-                if (request.getMethod() != null && routes.containsKey(request.getMethod().toString() + request.getPath())) {
-                    RequestHandler[] requestHandler = routes.get(request.getMethod().toString() + request.getPath());
-                    response = middlewareHandler.run(requestHandler, request);
-                }
-                //send answer
-                out.print(response);
-                out.flush();
+                connectionHandler(out, in);
 
                 //close connection
                 in.close();
@@ -61,6 +44,35 @@ public class App {
             throw new RuntimeException(e);
         }
     }
+
+    private void connectionHandler(PrintWriter out, BufferedReader in) {
+        Response response;
+        try {
+            //get request
+            StringBuilder rawRequestBuilder = new StringBuilder();
+            String line;
+            while ((line = in.readLine()) != null && !line.equals("")) {
+                rawRequestBuilder.append(line).append("\n");
+            }
+            String rawRequest = rawRequestBuilder.toString();
+            Request request = new Request(rawRequest, in);
+
+            //run requestHandler
+            response = new Response().setHttpStatusCode(HttpStatusCode.NOT_FOUND);
+            if (request.getMethod() != null && routes.containsKey(request.getMethod().toString() + request.getPath())) {
+                RequestHandler[] requestHandler = routes.get(request.getMethod().toString() + request.getPath());
+                response = middlewareHandler.run(requestHandler, request);
+            }
+
+        } catch (Exception e) {
+            response = new Response().setHttpStatusCode(HttpStatusCode.INTERNAL_SERVER_ERROR);
+            e.printStackTrace();
+        }
+        //send answer
+        out.print(response);
+        out.flush();
+    }
+
 
     /**
      * Runs before any route
