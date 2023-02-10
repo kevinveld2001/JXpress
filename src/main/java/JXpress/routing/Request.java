@@ -1,5 +1,6 @@
 package JXpress.routing;
 
+import JXpress.converters.Form;
 import JXpress.enums.Method;
 
 import java.io.BufferedReader;
@@ -15,8 +16,8 @@ public class Request {
     private String path;
     private String body = "";
 
-    private final Map<String, String> params = new HashMap<>();
-    private final Map<String, List<String>> paramlists = new HashMap<String, List<String>>();
+    private Map<String, String> params = new HashMap<>();
+    private Map<String, List<String>> paramlists = new HashMap<String, List<String>>();
 
 
     public Request(String rawRequest, BufferedReader in) {
@@ -57,26 +58,8 @@ public class Request {
     }
 
     private void addParams(String params) {
-        String[] rawParams = params.split("&");
-        for (String rawParam : rawParams) {
-            String[] paramKeyValue = rawParam.split("=");
-
-            String value = "";
-            if (paramKeyValue.length > 1) value = paramKeyValue[1];
-
-            // if param key ends with [] it's a list of params with that name
-            if (paramKeyValue[0].endsWith("[]")) {
-                String key = paramKeyValue[0].replace("[]", "");
-                if (!paramlists.containsKey(key)) {
-                    paramlists.put(key, new ArrayList<>());
-                }
-                paramlists.get(key).add(value);
-
-            } else {
-                //not a list just a param value that can be set.
-                this.params.put(paramKeyValue[0], value);
-            }
-        }
+        this.params = Form.decodeXFormData(params);
+        this.paramlists = Form.decodeXFormListData(params);
     }
 
     public Map<String, String> getParams() {
@@ -111,5 +94,21 @@ public class Request {
 
     public String getBody() {
         return body;
+    }
+
+    /**
+     * Will take bodydata and decode x-www-form-urlencoded in it to key value pair's
+     * @return Map<String, String> key, value
+     */
+    public Map<String, String> getXFormData() {
+        return Form.decodeXFormData(this.body);
+    }
+
+    /**
+     * Will take bodydata and decode x-www-form-urlencoded in it to key value(list) pair's
+     * @return Map<String, List<String>> key, value
+     */
+    public Map<String, List<String>> getXFormListData() {
+        return Form.decodeXFormListData(this.body);
     }
 }

@@ -84,6 +84,15 @@ public class Main {
         ShoppingCard shoppingCard = new ShoppingCard();
         app.addRoute(Method.GET, "/shop", req -> new Response().setJSON(shoppingCard));
 
+
+        app.addRoute(Method.POST, "/form", req ->  {
+            StringBuilder out = new StringBuilder();
+            req.getXFormData().forEach((key, value) -> out.append(key + ": " + value + "\n"));
+            req.getXFormListData().forEach((key, value) -> out.append(key + ": " + value  + "\n"));
+
+            return new Response().setBody(out.toString());
+        });
+
         app.listen(80);
     }
 }
