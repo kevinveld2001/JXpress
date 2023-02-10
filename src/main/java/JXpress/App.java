@@ -3,6 +3,7 @@ package JXpress;
 import JXpress.callback.RequestHandler;
 import JXpress.enums.HttpStatusCode;
 import JXpress.enums.Method;
+import JXpress.middleware.MiddlewareHandler;
 import JXpress.routing.Request;
 import JXpress.routing.Response;
 
@@ -10,11 +11,13 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class App {
 
     private final Map<String, RequestHandler> routes = new HashMap<>();
+    private final MiddlewareHandler middlewareHandler = new MiddlewareHandler();
 
 
     public void addRoute(Method method, String path, RequestHandler requestHandler) {
@@ -43,7 +46,7 @@ public class App {
                 Response response = new Response().setHttpStatusCode(HttpStatusCode.NOT_FOUND);
                 if (request.getMethod() != null && routes.containsKey(request.getMethod().toString() + request.getPath())) {
                     RequestHandler requestHandler = routes.get(request.getMethod().toString() + request.getPath());
-                    response = requestHandler.run(request);
+                    response = middlewareHandler.run(requestHandler, request);
                 }
                 //send answer
                 out.print(response);
@@ -57,5 +60,15 @@ public class App {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Runs before any route
+     * @param requestHandler
+     * In case a response is returned, the process will stop and the response returned to the client.
+     * In case a null is returned the next middleware or route is run
+     */
+    public void addGlobalMiddleware(RequestHandler requestHandler) {
+        middlewareHandler.addGlobalMiddleware(requestHandler);
     }
 }

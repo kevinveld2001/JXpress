@@ -14,6 +14,13 @@ public class Main {
 
         Counter counter = new Counter();
 
+        app.addGlobalMiddleware(req -> {
+            if (req.getParams().containsKey("middleware")) {
+                return new Response().setBody(req.getParams("middleware"));
+            }
+            return null;
+        });
+
         app.addRoute(Method.GET, "/", req ->
                 new Response().setHTML(
                         "<p>Counter: " + counter.getCounter() + "</p>" +
