@@ -1,5 +1,6 @@
 package JXpress.routing;
 
+import JXpress.converters.JSON;
 import JXpress.enums.ContentType;
 import JXpress.enums.HttpStatusCode;
 
@@ -25,6 +26,12 @@ public class Response {
     public Response setHTML(String html) {
         headers.put("Content-Type", ContentType.TEXT_HTML.getType());
         this.body = html;
+        return this;
+    }
+
+    public Response setJSON(Object object) {
+        headers.put("Content-Type", ContentType.APPLICATION_JSON.getType());
+        this.body = JSON.stringify(object);
         return this;
     }
 

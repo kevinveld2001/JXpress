@@ -5,6 +5,7 @@ import JXpress.callback.RequestHandler;
 import JXpress.enums.HttpStatusCode;
 import JXpress.enums.Method;
 import JXpress.routing.Response;
+import example.models.ShoppingCard;
 
 import java.util.List;
 
@@ -79,6 +80,9 @@ public class Main {
             //Index 5 is not in the array and sould get a 500 internal server error.
             return new Response().setBody(array[5]);
         });
+
+        ShoppingCard shoppingCard = new ShoppingCard();
+        app.addRoute(Method.GET, "/shop", req -> new Response().setJSON(shoppingCard));
 
         app.listen(80);
     }
